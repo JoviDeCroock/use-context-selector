@@ -10,23 +10,13 @@ var _react = _interopRequireDefault(require("react"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 // utils
-var forcedReducer = function forcedReducer(state) {
-  return state + 1;
-};
-
 var useForceUpdate = function useForceUpdate() {
-  return _react["default"].useReducer(forcedReducer, 0)[1];
+  return _react["default"].useReducer(function (state) {
+    return !state;
+  }, false)[1];
 };
 
-var calculateChangedBits = function calculateChangedBits() {
-  return 0;
-};
-
-var identity = function identity(x) {
-  return x;
-};
-
-var CONTEXT_LISTENERS = Symbol('CONTEXT_LISTENERS');
+var CONTEXT_LISTENERS = Symbol('CONTEXT_LISTENERS'); // createProvider
 
 var createProvider = function createProvider(OrigProvider, listeners) {
   return _react["default"].memo(function (_ref) {
@@ -34,8 +24,8 @@ var createProvider = function createProvider(OrigProvider, listeners) {
         children = _ref.children;
 
     _react["default"].useLayoutEffect(function () {
-      listeners.forEach(function (listener) {
-        return listener(value);
+      listeners.some(function (listener) {
+        listener(value);
       });
     }, [value]);
 
@@ -47,7 +37,9 @@ var createProvider = function createProvider(OrigProvider, listeners) {
 
 
 var createContext = function createContext(defaultValue) {
-  var context = _react["default"].createContext(defaultValue, calculateChangedBits);
+  var context = _react["default"].createContext(defaultValue, function () {
+    return 0;
+  });
 
   var listeners = new Set(); // shared listeners (not ideal)
 
@@ -111,7 +103,9 @@ var useContextSelector = function useContextSelector(context, selector) {
 exports.useContextSelector = useContextSelector;
 
 var useContext = function useContext(context) {
-  return useContextSelector(context, identity);
+  return useContextSelector(context, function (x) {
+    return x;
+  });
 };
 
 exports.useContext = useContext;

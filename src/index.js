@@ -1,27 +1,22 @@
 import React from 'react';
 
 // utils
-
-const forcedReducer = state => state + 1;
-const useForceUpdate = () => React.useReducer(forcedReducer, 0)[1];
-
-const calculateChangedBits = () => 0;
-
-const identity = x => x;
-
+const useForceUpdate = () => React.useReducer(state => !state, false)[1];
 const CONTEXT_LISTENERS = Symbol('CONTEXT_LISTENERS');
 
+// createProvider
 const createProvider = (OrigProvider, listeners) => React.memo(({ value, children }) => {
   React.useLayoutEffect(() => {
-    listeners.forEach(listener => listener(value));
+    listeners.forEach(listener => {
+      listener(value)
+    });
   }, [value]);
   return React.createElement(OrigProvider, { value }, children);
 });
 
 // createContext
-
 export const createContext = (defaultValue) => {
-  const context = React.createContext(defaultValue, calculateChangedBits);
+  const context = React.createContext(defaultValue, () => 0);
   const listeners = new Set();
   // shared listeners (not ideal)
   context[CONTEXT_LISTENERS] = listeners;
@@ -33,7 +28,6 @@ export const createContext = (defaultValue) => {
 };
 
 // useContextSelector
-
 export const useContextSelector = (context, selector) => {
   const listeners = context[CONTEXT_LISTENERS];
   if (!listeners) {
@@ -68,5 +62,4 @@ export const useContextSelector = (context, selector) => {
 };
 
 // useContext
-
-export const useContext = context => useContextSelector(context, identity);
+export const useContext = context => useContextSelector(context, x => x);

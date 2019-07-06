@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "compile": "babel src -d dist",
-    "test": "npm run eslint && npm run tsc-test && npm run jest",
+    "test": "npm run tsc-test && npm run jest",
     "eslint": "eslint --ext .js,.ts,.tsx --ignore-pattern dist .",
     "jest": "jest",
     "tsc-test": "tsc --project . --noEmit",
